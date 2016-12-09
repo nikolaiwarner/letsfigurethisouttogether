@@ -13,7 +13,6 @@ if (Meteor.isServer) {
 Meteor.methods({
   'visuals.insert'(name) {
     check(name, String)
-    check(dimensions, Object)
     Visuals.insert({
       name: name,
       createdAt: new Date(),
