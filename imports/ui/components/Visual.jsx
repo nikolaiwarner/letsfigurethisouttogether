@@ -120,9 +120,19 @@ export default class Visual extends Component {
     }
   }
 
+  toggleFullscreen() {
+    console.log('toggleFullscreen')
+    var el = document.documentElement,
+      rfs = el.requestFullscreen
+        || el.webkitRequestFullScreen
+        || el.mozRequestFullScreen
+        || el.msRequestFullscreen
+    rfs.call(el)
+  }
+
   render() {
     return (
-      <div className="visualContainer">
+      <div className="visualContainer" onClick={this.toggleFullscreen.bind(this)}>
         <canvas ref="canvas" id="canvas" width="100%" height="100%"></canvas>
       </div>
     )

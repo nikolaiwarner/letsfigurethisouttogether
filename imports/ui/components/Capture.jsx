@@ -32,15 +32,27 @@ export default class Visual extends Component {
     tracking.Fast.THRESHOLD = 3
     FastTracker.prototype.threshold = tracking.Fast.THRESHOLD
     FastTracker.prototype.track = (pixels, width, height) => {
-      let gray = tracking.Image.blur(pixels, width, height, 10)
+      let gray = tracking.Image.blur(pixels, width, height, 5)
       gray = tracking.Image.grayscale(gray, width, height)
       let corners = tracking.Fast.findCorners(gray, width, height)
       // corners = this.filterCorners(corners)
+      corners = this.mask(corners)
       this.setData(corners)
       this.draw(corners)
     }
     let tracker = new FastTracker()
-    tracking.track('#video', tracker, { camera: true })
+    tracking.track('#video', tracker, { camera: false })
+  }
+
+  mask(corners) {
+    let nextCorners = []
+    for (let i = 0; i < corners.length; i += 2) {
+      if (corners[i] > 60 && corners[i] < this.state.dimensions.width - 60) {
+        nextCorners.push(corners[i])
+        nextCorners.push(corners[i+1])
+      }
+    }
+    return nextCorners
   }
 
   filterCorners(corners) {
@@ -76,7 +88,7 @@ export default class Visual extends Component {
   draw(corners) {
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height)
     for (let i = 0; i < corners.length; i += 2) {
-      this._context.fillStyle = '#f00'
+      this._context.fillStyle = '#fff'
       this._context.fillRect(corners[i], corners[i + 1], 1, 1)
     }
   }
@@ -86,7 +98,7 @@ export default class Visual extends Component {
       <div className="visualContainer">
         <div className="captureFrame">
           <div className="captureContainer">
-            <video id="video" width={this.state.dimensions.width} height={this.state.dimensions.height} preload autoPlay loop muted></video>
+            <video src="/3.mp4" id="video" width={this.state.dimensions.width} height={this.state.dimensions.height} preload autoPlay loop muted controls></video>
             <canvas ref="canvas" width={this.state.dimensions.width} height={this.state.dimensions.height} ></canvas>
           </div>
         </div>
